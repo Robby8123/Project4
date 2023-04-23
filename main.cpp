@@ -1,21 +1,12 @@
 #include "BookRecommender.h"
 #include <iostream>
+#include <iomanip>
 
 int main() {
-    BookRecommender recommender("small_ratings.dat");
+    BookRecommender recommender("ratings.txt");
     std::string book;
-    std::cout << "Enter book name: ";
-    std::getline(std::cin, book);
-    while (book != "quit") {
-        double average = recommender.getAverageRating(book);
-        if (average == -1.0) {
-            std::cout << "Book not found" << std::endl;
-        } else {
-            std::cout << "Average rating for " << book << ": " << average << std::endl;
-        }
+    while (true) {
         std::cout << "Enter book name: ";
-        std::getline(std::cin, book);
-    }
-    return 0;
-}
-
+        std::cin >> book;
+        if (book == "quit") {
+           
