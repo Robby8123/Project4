@@ -1,27 +1,19 @@
 #ifndef BOOK_RECOMMENDER_H
 #define BOOK_RECOMMENDER_H
 
-#include <vector>
 #include <string>
-#include <map>
+#include <vector>
+#include <unordered_map>
 
 class BookRecommender {
 public:
-    BookRecommender();
-    BookRecommender(std::string fileName);
-    void printRecommend(std::string userName);
-    void printAverages();
-    double getAverage(std::string bookTitle);
-    double getSimilarity(std::string userName1, std::string userName2);
-    int getBookCount();
-    int getUserCount();
-    double getUserBookRating(std::string userName, std::string bookTitle);
+    BookRecommender(const std::string& filename);
+    double getAverageRating(const std::string& book_name) const;
+    void printRatings() const;
 
 private:
-    std::vector<std::string> books;
-    std::vector<std::string> users;
-    std::map<std::string, std::vector<double>> ratedBooks;
-    std::map<std::string, double> averages;
+    std::unordered_map<std::string, std::vector<double>> book_ratings;
+    bool readFile(const std::string& filename);
 };
 
-#endif /* BOOK_RECOMMENDER_H */
+#endif // BOOK_RECOMMENDER_H
