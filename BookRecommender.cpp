@@ -1,70 +1,53 @@
 #include "BookRecommender.h"
 #include <fstream>
 #include <sstream>
-#include <algorithm>
-#include <numeric>
+#include <iostream>
 
-// Constructor that initializes the object with empty books, users, and ratings
-BookRecommender::BookRecommender() {}
-
-// Constructor that reads from the specified file to initialize the object
-BookRecommender::BookRecommender(std::string fileName) {
-    std::ifstream inFile(fileName);
-    if (inFile.good()) {
-        std::string line;
-        while (std::getline(inFile, line)) {
-            std::stringstream ss(line);
-            std::string title;
-            ss >> title;
-            books.push_back(title);
-            double rating;
-            std::vector<double> ratings;
-            while (ss >> rating) {
-                ratings.push_back(rating);
-            }
-            if (!ratings.empty()) {
-                std::string user = ratedBooks.size() > 0 ? ratedBooks.begin()->first : "";
-                ratedBooks[user] = ratings;
-            }
-        }
-        inFile.close();
+BookRecommender::BookRecommender(const std::string& filename) {
+    if (!readFile(filename)) {
+        std::cout << "Error reading file " << filename << std::endl;
     }
 }
 
-// Prints book recommendations for the specified user
-void BookRecommender::printRecommend(std::string userName) {
-    // Implementation for recommending books to a user
+double BookRecommender::getAverageRating(const std::string& book_name) const {
+    auto it = this->book_ratings.find(book_name);
+    if (it == this->book_ratings.end()) {
+        return -1.0;
+    }
+    const std::vector<double>& ratings = it->second;
+    double total = 0;
+    for (double rating : ratings) {
+        total += rating;
+    }
+    return total / ratings.size();
 }
 
-// Prints the average rating for each book
-void BookRecommender::printAverages() {
-    // Implementation for printing book rating averages
+void BookRecommender::printRatings() const {
+    for (auto it = this->book_ratings.begin(); it != this->book_ratings.end(); ++it) {
+        std::cout << it->first << ": ";
+        const std::vector<double>& ratings = it->second;
+        for (double rating : ratings) {
+            std::cout << rating << " ";
+        }
+        std::cout << std::endl;
+    }
 }
 
-// Returns the average rating for the specified book
-double BookRecommender::getAverage(std::string bookTitle) {
-    // Implementation for getting average rating of a book
-    return 0.0;
-}
-
-// Returns the similarity between two users based on their book ratings
-double BookRecommender::getSimilarity(std::string userName1, std::string userName2) {
-    // Implementation for getting similarity between two users
-    return 0.0;
-}
-
-// Returns the number of books in the BookRecommender object
-int BookRecommender::getBookCount() {
-    return books.size();
-}
-
-// Returns the number of users in the BookRecommender object
-int BookRecommender::getUserCount() {
-    return ratedBooks.size();
-}
-
-// Returns the rating of a specified book by a specified user
-double BookRecommender::getUserBookRating(std::string userName, std::string bookTitle) {
-    // Implementation for getting user's rating for a book
-    return 0.0;
+bool BookRecommender::readFile(const std::string& filename) {
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cout << "Error opening file " << filename << std::endl;
+        return false;
+    }
+    std::string line;
+    while (std::getline(file, line)) {
+        std::stringstream ss(line);
+        std::string user, book;
+        double rating;
+        if (ss >> user >> book >> rating) {
+            this->book_ratings[book].push_back(rating);
+        }
+    }
+    file.close();
+    return true;
 }
